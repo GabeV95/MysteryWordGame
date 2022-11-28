@@ -13,7 +13,7 @@ public class MysteryWordServer  {
 	private int[] values;
 	private String[] guessWords = new String[4];
 	private char mysteryChar;
-	private String mysteryWord;
+	private String mysteryWord, player1BtnWord, player2BtnWord;
 	
 	public MysteryWordServer() {
 		System.out.println("Game Server");
@@ -122,14 +122,16 @@ public class MysteryWordServer  {
 				
 				while(true) {
 					if(playerId == 1) {
-						player1BtnNum = dataIn.readInt();
-						System.out.printf("Player 1 clicked button #%d%n", player1BtnNum);
-						player2.sendBtnNum(player1BtnNum);
+						//player1BtnNum = dataIn.readInt();
+						player1BtnWord = dataIn.readUTF();
+						System.out.printf("Player 1 clicked button #%d%n", player1BtnWord);
+						player2.sendBtnWord(player1BtnWord);
 					}
 					else {
-						player2BtnNum = dataIn.readInt();
-						System.out.printf("Player 2 clicked button #%d%n", player2BtnNum);
-						player1.sendBtnNum(player2BtnNum);
+						//player2BtnNum = dataIn.readInt();
+						player2BtnWord = dataIn.readUTF();
+						System.out.printf("Player 2 clicked button #%d%n", player2BtnWord);
+						player1.sendBtnWord(player2BtnWord);
 					}
 					turnsMade++;
 					if(turnsMade==maxTurns) {
@@ -146,6 +148,14 @@ public class MysteryWordServer  {
 		public void sendBtnNum(int num) {
 			try {
 				dataOut.writeInt(num);
+				dataOut.flush();
+			}catch(IOException ex) {
+				System.out.println("IOException from sendBtnNum SS");
+			}
+		}
+		public void sendBtnWord(String word) {
+			try {
+				dataOut.writeUTF(word);
 				dataOut.flush();
 			}catch(IOException ex) {
 				System.out.println("IOException from sendBtnNum SS");

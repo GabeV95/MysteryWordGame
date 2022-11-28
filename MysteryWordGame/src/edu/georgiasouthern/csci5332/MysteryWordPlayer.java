@@ -17,6 +17,7 @@ public class MysteryWordPlayer extends JFrame {
 	private String mysteryWord;
 	private String[] words = new String[4];
 	private ArrayList<JButton>buttons = new ArrayList<>();
+	private JButton[] wordsArr = new JButton[words.length];
 	private boolean buttonsEnabled;
 	private JTextArea window;	
 	public MysteryWordPlayer(int w, int h) {
@@ -48,10 +49,13 @@ public class MysteryWordPlayer extends JFrame {
 		message.setWrapStyleWord(true);
 		message.setLineWrap(true);
 		message.setEditable(false);
-		contentPane.add(b1);
-		contentPane.add(b2);
-		contentPane.add(b3);
-		contentPane.add(b4);
+//		contentPane.add(b1);
+//		contentPane.add(b2);
+//		contentPane.add(b3);
+//		contentPane.add(b4);
+		for(int i = 0;i<wordsArr.length;i++) {
+			contentPane.add(wordsArr[i]);
+		}
 		this.setVisible(true);
 		
 		if(playerId == 1) {
@@ -81,14 +85,18 @@ public class MysteryWordPlayer extends JFrame {
 		public void actionPerformed(ActionEvent ae) {
 			JButton b = (JButton)ae.getSource();
 			int bNum = Integer.parseInt(b.getText());
-			message.setText("You clicked button number: " + bNum + ", now wait for player #" + otherPlayer);
+			String bWord = b.getText();
+			message.setText("You clicked button number: " + bWord + ", now wait for player #" + otherPlayer);
 			turnsMade++;
 			System.out.printf("Turns made: %d%n", turnsMade);
 			buttonsEnabled = false;
 			toggleButtons();
-			myPoints+=values[bNum - 1];
+			//myPoints+=values[bNum - 1];
+			if(bWord==mysteryWord) {
+				myPoints++;
+			}
 			System.out.printf("My points: %d%n", myPoints);
-			csc.sendBtnNum(bNum);
+			csc.sendBtnWord(bWord);
 			
 			if(playerId==2 && turnsMade==maxTurns) {
 				checkWinner();
@@ -103,8 +111,8 @@ public class MysteryWordPlayer extends JFrame {
 			}
 		}
 	};
-	for(int i = 0;i<buttons.size();i++) {
-		buttons.get(i).addActionListener(al);
+	for(int i = 0;i<wordsArr.length;i++) {
+		wordsArr[i].addActionListener(al);
 	}
 //	b1.addActionListener(al);
 //	b2.addActionListener(al);
@@ -112,8 +120,8 @@ public class MysteryWordPlayer extends JFrame {
 //	b4.addActionListener(al);
 		}
 	public void toggleButtons() {
-		for(int i = 0;i<buttons.size();i++) {
-			buttons.get(i).setEnabled(buttonsEnabled);
+		for(int i = 0;i<wordsArr.length;i++) {
+			wordsArr[i].setEnabled(buttonsEnabled);
 		}
 	}
 //	public void startReceivingBtnNums() {
@@ -127,9 +135,12 @@ public class MysteryWordPlayer extends JFrame {
 //		t.start();
 //	}
 	public void updateTurn() {
-		int num = csc.receiveBtnNum();
-		message.setText("Your enemy clicked button #" + num + ". Your turn");;
-		enemyPoints += values[num - 1];
+		String word = csc.receiveBtnWord();
+		message.setText("Your enemy clicked button #" + word + ". Your turn");;
+		//enemyPoints += values[num - 1];
+		if(word==mysteryWord) {
+			enemyPoints++;
+		}
 		System.out.printf("Your enemy has %d points%n", enemyPoints);
 		
 		if(playerId == 1 && turnsMade == maxTurns) {
@@ -177,13 +188,17 @@ public class MysteryWordPlayer extends JFrame {
 				words[2] = dataIn.readUTF();
 				words[3] = dataIn.readUTF();
 				
-				for(int i = 0; i <= words.length; i++) {
+				for(int i = 0; i < words.length; i++) {
 					words[i] = dataIn.readUTF();
 				}
 				System.out.printf("maxTurns: %s%n", maxTurns);
 				
-				for(int i = 0; i <= words.length; i++) {
-					System.out.printf("Word #%s is %s", i, words[i]);
+				for(int i = 0; i < words.length; i++) {
+					System.out.printf("Word #%s is %s%n", i, words[i]);
+				}
+				for(int i = 0;i<wordsArr.length;i++) {
+					wordsArr[i] = new JButton(words[i]);
+					System.out.println(wordsArr[i].getText());
 				}
 				
 //				values[0] = dataIn.readInt();
@@ -214,6 +229,14 @@ public class MysteryWordPlayer extends JFrame {
 				System.out.println("IOException from send button");
 			}
 		}
+		public void sendBtnWord(String word) {
+			try {
+				dataOut.writeUTF(word);
+				dataOut.flush();
+			}catch(IOException ex) {
+				System.out.println("IOException from send button");
+			}
+		}
 		public int receiveBtnNum() {
 			int num = -1;
 			try {
@@ -224,6 +247,18 @@ public class MysteryWordPlayer extends JFrame {
 			}
 			return num;
 		}
+		public String receiveBtnWord() {
+			//int num = -1;
+			String word = "";
+			try {
+				word = dataIn.readUTF();
+				System.out.printf("Player #%d clicked button #%d%n", otherPlayer, word);
+			}catch(IOException ex) {
+				System.out.println("IOException at receiveBtnNum CSC");
+			}
+			return word;
+		}
+
 		public void closeConnection() {
 			try {
 				socket.close();
