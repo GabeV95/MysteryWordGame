@@ -124,13 +124,13 @@ public class MysteryWordServer  {
 					if(playerId == 1) {
 						//player1BtnNum = dataIn.readInt();
 						player1BtnWord = dataIn.readUTF();
-						System.out.printf("Player 1 clicked button #%d%n", player1BtnWord);
+						System.out.printf("Player 1 clicked word: %s%n", player1BtnWord);
 						player2.sendBtnWord(player1BtnWord);
 					}
 					else {
 						//player2BtnNum = dataIn.readInt();
 						player2BtnWord = dataIn.readUTF();
-						System.out.printf("Player 2 clicked button #%d%n", player2BtnWord);
+						System.out.printf("Player 2 clicked word: %s%n", player2BtnWord);
 						player1.sendBtnWord(player2BtnWord);
 					}
 					turnsMade++;
