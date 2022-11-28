@@ -14,6 +14,7 @@ public class MysteryWordServer  {
 	private String[] guessWords = new String[4];
 	private char mysteryChar;
 	private String mysteryWord;
+	
 	public MysteryWordServer() {
 		System.out.println("Game Server");
 		numPlayers = 0;
@@ -25,11 +26,16 @@ public class MysteryWordServer  {
 //			values[i] = (int)Math.ceil(Math.random() * 26);
 //			System.out.printf("Value #%d is %d%n", i+1, values[i]);
 //		}
+		
 		mysteryNum = (int)Math.ceil((Math.random()*4));
 		
 		try {
-			Scanner scanner = new Scanner(new File("C:/Users/gabev/Downloads/words.txt"));
+			
+			URL path = MysteryWordServer.class.getResource("words.txt");
+			File f = new File(path.getFile());
+			Scanner scanner = new Scanner(f);
 			List<String> words = new ArrayList<>();
+			
 		      
 		      while (scanner.hasNext()) {
 		        words.add(scanner.nextLine());
@@ -38,8 +44,8 @@ public class MysteryWordServer  {
 		      Random rand = new Random();
 		      mysteryWord = words.get(rand.nextInt(words.size()));
 		      
-		      for(int i = 0;i<guessWords.length;i++) {
-		    	  if(mysteryNum==i) {
+		      for(int i = 0; i < guessWords.length; i++) {
+		    	  if(mysteryNum == i) {
 		    		  guessWords[i] = mysteryWord;
 		    	  }
 		    	  else {
@@ -47,7 +53,7 @@ public class MysteryWordServer  {
 		    	  }
 		    	  System.out.println(guessWords[i]);
 		      }
-		      System.out.println(mysteryWord);
+		      System.out.println("Mystery Word: " + mysteryWord);
 			ss = new ServerSocket(51736);
 		}catch(IOException io) {
 			System.out.println("IOException");
@@ -104,6 +110,9 @@ public class MysteryWordServer  {
 //				dataOut.writeInt(values[1]);
 //				dataOut.writeInt(values[2]);
 //				dataOut.writeInt(values[3]);
+				for(int i = 0; i < guessWords.length; i++) {
+					dataOut.writeUTF(guessWords[i]);
+				}
 				dataOut.writeUTF(mysteryWord);
 				dataOut.writeUTF(guessWords[0]);
 				dataOut.writeUTF(guessWords[1]);
@@ -112,7 +121,7 @@ public class MysteryWordServer  {
 				dataOut.flush();
 				
 				while(true) {
-					if(playerId==1) {
+					if(playerId == 1) {
 						player1BtnNum = dataIn.readInt();
 						System.out.printf("Player 1 clicked button #%d%n", player1BtnNum);
 						player2.sendBtnNum(player1BtnNum);

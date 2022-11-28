@@ -81,12 +81,12 @@ public class MysteryWordPlayer extends JFrame {
 		public void actionPerformed(ActionEvent ae) {
 			JButton b = (JButton)ae.getSource();
 			int bNum = Integer.parseInt(b.getText());
-			message.setText("You clicked button number: "+bNum+", now wait for player #"+otherPlayer);
+			message.setText("You clicked button number: " + bNum + ", now wait for player #" + otherPlayer);
 			turnsMade++;
 			System.out.printf("Turns made: %d%n", turnsMade);
 			buttonsEnabled = false;
 			toggleButtons();
-			myPoints+=values[bNum-1];
+			myPoints+=values[bNum - 1];
 			System.out.printf("My points: %d%n", myPoints);
 			csc.sendBtnNum(bNum);
 			
@@ -128,11 +128,11 @@ public class MysteryWordPlayer extends JFrame {
 //	}
 	public void updateTurn() {
 		int num = csc.receiveBtnNum();
-		message.setText("Your enemy clicked button #"+num+". Your turn");;
-		enemyPoints+=values[num-1];
+		message.setText("Your enemy clicked button #" + num + ". Your turn");;
+		enemyPoints += values[num - 1];
 		System.out.printf("Your enemy has %d points%n", enemyPoints);
 		
-		if(playerId==1&&turnsMade==maxTurns) {
+		if(playerId == 1 && turnsMade == maxTurns) {
 			checkWinner();
 		}
 		else {
@@ -142,14 +142,14 @@ public class MysteryWordPlayer extends JFrame {
 	}
 	private void checkWinner() {
 		buttonsEnabled = false;
-		if(myPoints>enemyPoints) {
-			message.setText("You won!\nYou: "+myPoints+"\nEnemy: "+enemyPoints);
+		if(myPoints > enemyPoints) {
+			message.setText("You won!\nYou: " + myPoints + "\nEnemy: " + enemyPoints);
 		}
 		else if(myPoints<enemyPoints) {
-			message.setText("You lost!\nYou: "+myPoints+"\nEnemy: "+enemyPoints);
+			message.setText("You lost!\nYou: " + myPoints + "\nEnemy: " + enemyPoints);
 		}
 		else {
-			message.setText("It's a tie. You both got: "+myPoints+"points");
+			message.setText("It's a tie. You both got: " + myPoints + " points");
 		}
 		
 		csc.closeConnection();
@@ -177,6 +177,15 @@ public class MysteryWordPlayer extends JFrame {
 				words[2] = dataIn.readUTF();
 				words[3] = dataIn.readUTF();
 				
+				for(int i = 0; i <= words.length; i++) {
+					words[i] = dataIn.readUTF();
+				}
+				System.out.printf("maxTurns: %s%n", maxTurns);
+				
+				for(int i = 0; i <= words.length; i++) {
+					System.out.printf("Word #%s is %s", i, words[i]);
+				}
+				
 //				values[0] = dataIn.readInt();
 //				values[1] = dataIn.readInt();
 //				values[2] = dataIn.readInt();
@@ -186,7 +195,7 @@ public class MysteryWordPlayer extends JFrame {
 //				for(int i : values) {
 //					values[i] = dataIn.readInt();
 //				}
-				System.out.printf("maxTurns: %d%n", maxTurns);
+//				System.out.printf("maxTurns: %d%n", maxTurns);
 				
 //				for(int i : values) {
 //					System.out.printf("Value #%d is %d",i, values[i]);
